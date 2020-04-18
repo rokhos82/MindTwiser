@@ -1,12 +1,29 @@
 <html>
   <head>
-    <title>Mind Twiser<title>
+    <title>Mind Twister</title>
+    <link rel="stylesheet" href="mindtwister.css">
     <script src="angular.js"></script>
     <script src="lodash.js"></script>
   </head>
-  <body ng-app="MindTwiser">
-    <container ng-controller="mtCtrl as $ctrl">
-    </container>
+  <body ng-app="MindTwister">
+    <div ng-controller="mtCtrl as $ctrl">
+      <h1>{{$ctrl.title}}</h1>
+      <button ng-click="$ctrl.start()">Start</button>
+      <table>
+        <tr>
+          <td class="blue">1</td>
+          <td class="blue">2</td>
+          <td class="blue">3</td>
+          <td class="blue">4</td>
+          <td></td>
+          <td></td>
+          <td class="red">1</td>
+          <td class="red">2</td>
+          <td class="red">3</td>
+          <td class="red">4</td>
+        </tr>
+      </table>
+    </div>
     <script src="mindtwister.js"></script>
   </body>
 </html>
