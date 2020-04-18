@@ -10,17 +10,8 @@
       <h1>{{$ctrl.title}}</h1>
       <button ng-click="$ctrl.start()">Start</button>
       <table>
-        <tr>
-          <td class="blue">1</td>
-          <td class="blue">2</td>
-          <td class="blue">3</td>
-          <td class="blue">4</td>
-          <td></td>
-          <td></td>
-          <td class="red">1</td>
-          <td class="red">2</td>
-          <td class="red">3</td>
-          <td class="red">4</td>
+        <tr ng-repeat="state in $ctrl.output">
+          <td ng-repeat="hole in state.holes" class="{{hole.peg.color}}">{{hole.peg.label}}</td>
         </tr>
       </table>
     </div>
