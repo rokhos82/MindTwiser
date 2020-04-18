@@ -20,38 +20,6 @@
     this.peg = p;
   };
 
-  /*var state = {
-    internal: ["b","b","b","b","e","e","r","r","r","r"],
-    holes: [
-      new hole(new bluePeg(1)),
-      new hole(new bluePeg(2)),
-      new hole(new bluePeg(3)),
-      new hole(new bluePeg(4)),
-      new hole(new empty()),
-      new hole(new empty()),
-      new hole(new redPeg(1)),
-      new hole(new redPeg(2)),
-      new hole(new redPeg(3)),
-      new hole(new redPeg(4)),
-    ]
-  };
-
-  var example1 = {
-    internal: ["b","b","b","e","b","e","r","r","r","r"],
-    holes: [
-      new hole(new bluePeg(1)),
-      new hole(new bluePeg(2)),
-      new hole(new bluePeg(3)),
-      new hole(new empty()),
-      new hole(new bluePeg(4)),
-      new hole(new empty()),
-      new hole(new redPeg(1)),
-      new hole(new redPeg(2)),
-      new hole(new redPeg(3)),
-      new hole(new redPeg(4)),
-    ]
-  };*/
-
   app.controller("mtCtrl",["$scope",controller]);
 
   function controller($scope) {
@@ -106,13 +74,44 @@
     function bruteForce(sta) {
       // Look for the first available move
       var i = 0;
+      var moves = ["moveBlue","jumpBlue","moveRed","jumpRed"];
+      var move = _.sample(moves);
+
       _.forEach(sta,function(peg,index) {
-        if(peg == "b" && sta[index+1] == "e") {
+        if(move == "moveBlule" && peg == "b" && sta[index+1] == "e") {
           i = index;
         }
+        else if(move == "jumpBlue")
       });
       movePeg(sta,i,i+1);
       return sta;
+    }
+
+    function calculateStates(sta) {
+      var states = [];
+
+      _.forEach(sta,function(peg,index) {
+        if(peg == "b") {
+          // Check for move right and jump right
+          if(index < 9 && sta[index+1] == "e") {
+            // Move right
+          }
+          else if(index < 8 && (sta[index+1] == "b" || sta[index+1] == "r") && sta[index+2] == "e") {
+            // Jump right
+          }
+        }
+        if(peg == "r") {
+          // Check for move left and jump left
+          if(sta[index-1] == "e") {
+            // Move left
+          }
+          else if((sta[index-1] == "b" || sta[index-1] == "r") && sta[index-2] == "e") {
+            // Jump left
+          }
+        }
+      });
+
+      return states;
     }
 
     function movePeg(sta,i,j) {
