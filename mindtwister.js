@@ -33,6 +33,14 @@
     $ctrl.title = "Mind Twister";
     $ctrl.output = [];
 
+    $ctrl.states = {
+      "bbbbeerrrr": {
+        board: _.clone(startState),
+        neighbors: []
+      }
+    };
+    $ctrl.solution = [];
+
     $ctrl.start = function() {
       turn = 0;
       var state = _.clone(startState);
@@ -72,18 +80,16 @@
     }
 
     function bruteForce(sta) {
-      // Look for the first available move
-      var i = 0;
-      var moves = ["moveBlue","jumpBlue","moveRed","jumpRed"];
-      var move = _.sample(moves);
+      // Calculate all states from this states
+      var states = calculateStates(sta);
 
-      _.forEach(sta,function(peg,index) {
-        if(move == "moveBlule" && peg == "b" && sta[index+1] == "e") {
-          i = index;
-        }
-        else if(move == "jumpBlue")
-      });
-      movePeg(sta,i,i+1);
+      // Fill out state graph
+      updateStateGraph(sta,states);
+
+      // Choose next step
+      var nextState = _.sample(states);
+
+      // Update solution
       return sta;
     }
 
@@ -95,19 +101,30 @@
           // Check for move right and jump right
           if(index < 9 && sta[index+1] == "e") {
             // Move right
+            states.push(movePeg(sta,index,index+1));
           }
           else if(index < 8 && (sta[index+1] == "b" || sta[index+1] == "r") && sta[index+2] == "e") {
             // Jump right
+            states.push(movePeg(sta,index,index+2))
           }
         }
-        if(peg == "r") {
+        else if(peg == "r") {
           // Check for move left and jump left
           if(sta[index-1] == "e") {
             // Move left
+            states.push(movePeg(sta,index,index-1));
           }
           else if((sta[index-1] == "b" || sta[index-1] == "r") && sta[index-2] == "e") {
             // Jump left
+            states.push(movePeg(sta,index,index-2));
           }
+        }
+        else if(peg == "e") {
+          // Don't do anything
+        }
+        else {
+          // What on earth happened?
+          console.warn("Invalid peg on the board.  What did Eli do?");
         }
       });
 
@@ -115,13 +132,49 @@
     }
 
     function movePeg(sta,i,j) {
-      var p1 = sta[i];
-      sta[i] = sta[j];
-      sta[j] = p1;
-      return sta;
+      var state = _.clone(sta);
+      var p1 = state[i];
+      state[i] = state[j];
+      state[j] = p1;
+      return state;
     }
 
-    function validMove(sta) {
+    function stateHash(sta) {
+      // Computets the hash of the state passed.  The hash consists of a string
+      // representing the pegs on the board.
+      var hash = "";
+      _.forEach(sta,function(p) {
+        hash += p;
+      });
+      return hash;
+    }
+
+    function updateStateGraph(currentState,newStates) {
+      var currentStateHash = stateHash(currentState);
+      _.foreach(newStates,function(sta) {
+        // Compute the hash of the state
+        var hash = stateHash(sta);
+
+        // Add the new state to the neighbors list if it is not already there
+        if(!$ctrl.states[currentStateHash].neighbors,hash) {
+          $ctrl.states[currentStateHash].neighbors.push(hash);
+        }
+
+        // Add the state to the states list if it does not exist.  If the new
+        // state does exist, update it's neighbors list
+        if(!_.isObject($ctrl.states[hash])) {
+          $ctrl.states[hash] = {
+            board: sta,
+            neighbors: [currentStateHash]
+          }
+        }
+        else {
+          // Update the neighbor list if need be
+          if(!_.includes($ctrl.states[hash].neighbors,currentStateHash)) {
+            $ctrl.states[hash].neighbors.push(currentState);
+          }
+        }
+      });
     }
   }
 })();
