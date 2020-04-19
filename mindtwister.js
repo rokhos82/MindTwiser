@@ -29,6 +29,7 @@
     var endState = ["r","r","r","r","e","e","b","b","b","b"];
     var limiter = 50;
     var turn = 0;
+    var done = false;
 
     $ctrl.title = "Mind Twister";
     $ctrl.output = [];
@@ -36,27 +37,46 @@
     $ctrl.states = {
       "bbbbeerrrr": {
         board: _.clone(startState),
-        neighbors: []
+        neighbors: [],
+        visited: true
       }
     };
     $ctrl.solution = [];
 
     $ctrl.start = function() {
-      turn = 0;
-      var state = _.clone(startState);
-      console.log("Starting");
-      console.log(state);
-      while(didWeWin(state)) {
-        turn++;
-        console.log(turn,state);
-        state = bruteForce(state);
-        console.log(turn,state);
-        $ctrl.output.push(buildOutput(state));
-      }
+      $ctrl.output = [];
+      $ctrl.solution = [];
+      startWork();
     };
 
+    function startWork() {
+      turn = 0;
+      done = false;
+      var state = _.clone(startState);
+      console.log("Beginning");
+
+      $ctrl.output.push(buildOutput(state));
+      $ctrl.solution.push(state);
+
+      while(didWeWin(state)) {
+        turn++;
+        console.log(`Starting turn ${turn}`);
+        console.log(`Cur state is:`,state);
+
+        state = bruteForce(state);
+
+        console.log(`New state is:`,state);
+
+        $ctrl.output.push(buildOutput(state));
+        $ctrl.solution.push(state);
+      }
+
+      console.log("states",$ctrl.states);
+      console.log("solution",$ctrl.solution);
+    }
+
     function didWeWin(sta) {
-      return (!_.isEqual(sta,endState) && turn <= limiter);
+      return (!_.isEqual(sta,endState) && turn <= limiter && !done);
     }
 
     function buildOutput(sta) {
@@ -83,14 +103,19 @@
       // Calculate all states from this states
       var states = calculateStates(sta);
 
-      // Fill out state graph
-      updateStateGraph(sta,states);
+      if(states.length === 0) {
+        done = true;
+      }
+      else {
+        // Fill out state graph
+        updateStateGraph(sta,states);
 
-      // Choose next step
-      var nextState = _.sample(states);
+        // Choose next step
+        var nextState = _.sample(states);
 
-      // Update solution
-      return sta;
+        // Update solution
+        return nextState;
+      }
     }
 
     function calculateStates(sta) {
@@ -151,7 +176,7 @@
 
     function updateStateGraph(currentState,newStates) {
       var currentStateHash = stateHash(currentState);
-      _.foreach(newStates,function(sta) {
+      _.forEach(newStates,function(sta) {
         // Compute the hash of the state
         var hash = stateHash(sta);
 
