@@ -6,6 +6,11 @@ td {
   font-weight: bold;
   text-align: center;
   vertical-align: center;
+  margin-bottom: 10px;
+}
+
+tr {
+  margin-bottom: 10px;
 }
 
 .blue {

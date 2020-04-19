@@ -27,7 +27,7 @@
 
     var startState = ["b","b","b","b","e","e","r","r","r","r"];
     var endState = ["r","r","r","r","e","e","b","b","b","b"];
-    var limiter = 50;
+    var limiter = 3;
     var turn = 0;
     var done = false;
 
@@ -118,6 +118,26 @@
       }
     }
 
+    function randomRewind(sta) {
+      // Calculate all states from this states
+      var states = calculateStates(sta);
+
+      if(states.length === 0) {
+        // Add a solution rewind
+        done = true;
+      }
+      else {
+        // Fill out state graph
+        updateStateGraph(sta,states);
+
+        // Choose next step
+        var nextState = _.sample(states);
+
+        // Update solution
+        return nextState;
+      }
+    }
+
     function calculateStates(sta) {
       var states = [];
 
@@ -175,14 +195,23 @@
     }
 
     function updateStateGraph(currentState,newStates) {
+      console.log("Updating state graph");
+      console.log(newStates);
+
       var currentStateHash = stateHash(currentState);
+      console.log(`Current State Hash: ${currentStateHash}`);
+
+      $ctrl.states[currentStateHash].visited = true;
+
       _.forEach(newStates,function(sta) {
         // Compute the hash of the state
         var hash = stateHash(sta);
+        console.log(`State hash: ${hash}`);
 
         // Add the new state to the neighbors list if it is not already there
         if(!$ctrl.states[currentStateHash].neighbors,hash) {
           $ctrl.states[currentStateHash].neighbors.push(hash);
+          console.log(`New Neightbor State (${hash}) `,$ctrl.states[currentStateHash].neighbors)
         }
 
         // Add the state to the states list if it does not exist.  If the new

@@ -11,6 +11,7 @@
       <button ng-click="$ctrl.start()">Start</button>
       <table>
         <tr ng-repeat="state in $ctrl.output">
+          <td>{{$index}}</td>
           <td ng-repeat="hole in state.holes" class="{{hole.peg.color}}">{{hole.peg.label}}</td>
         </tr>
       </table>
