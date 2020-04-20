@@ -9,8 +9,16 @@
     <div ng-controller="mtCtrl as $ctrl">
       <h1>{{$ctrl.title}}</h1>
       <button ng-click="$ctrl.start()">Start</button>
+      <h3>Output</h3>
       <table>
         <tr ng-repeat="state in $ctrl.output">
+          <td>{{$index}}</td>
+          <td ng-repeat="hole in state.holes" class="{{hole.peg.color}}">{{hole.peg.label}}</td>
+        </tr>
+      </table>
+      <h3>Solution</h3>
+      <table>
+        <tr ng-repeat="state in $ctrl.solutionOutput">
           <td>{{$index}}</td>
           <td ng-repeat="hole in state.holes" class="{{hole.peg.color}}">{{hole.peg.label}}</td>
         </tr>

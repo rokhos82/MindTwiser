@@ -27,12 +27,13 @@
 
     var startState = ["b","b","b","b","e","e","r","r","r","r"];
     var endState = ["r","r","r","r","e","e","b","b","b","b"];
-    var limiter = 50;
+    var limiter = 1000;
     var turn = 0;
     var done = false;
 
     $ctrl.title = "Mind Twister";
     $ctrl.output = [];
+    $ctrl.solutionOutput = [];
 
     $ctrl.states = {
       "bbbbeerrrr": {
@@ -63,7 +64,7 @@
         console.log(`%cStarting turn ${turn}`,"color: orange; font-size: 20pt;");
         console.log(`Cur state is:`,state);
 
-        state = bruteForce(state);
+        state = randomRewind(state);
 
         console.log(`New state is:`,state);
 
@@ -73,6 +74,10 @@
 
       console.log("states",$ctrl.states);
       console.log("solution",$ctrl.solution);
+
+      _.forEach($ctrl.solution,function(s) {
+        $ctrl.solutionOutput.push(buildOutput(s));
+      });
     }
 
     function didWeWin(sta) {
@@ -122,20 +127,35 @@
       // Calculate all states from this states
       var states = calculateStates(sta);
 
-      if(states.length === 0) {
-        // Add a solution rewind
-        done = true;
+
+      // Fill out state graph
+      updateStateGraph(sta,states);
+
+      // Remove states that have been accessed before
+      states = _.filter(states,function(s) {
+        var h = stateHash(s);
+        return !$ctrl.states[h].visited;
+      });
+      console.log("Possible next states",states);
+
+      // Do we have any moves left?
+      var nextState = null;
+      if(_.isArray(states) && states.length > 0) {
+        // Yes, choose next step
+        nextState = _.sample(states);
+        console.log("Going deep");
+        console.log($ctrl.solution);
       }
       else {
-        // Fill out state graph
-        updateStateGraph(sta,states);
-
-        // Choose next step
-        var nextState = _.sample(states);
-
-        // Update solution
-        return nextState;
+        // No, go up the solution chain
+        $ctrl.solution.pop();
+        var nextState = $ctrl.solution.pop();
+        console.log("Going shallow");
+        console.log($ctrl.solution);
       }
+
+      // Update solution
+      return nextState;
     }
 
     function calculateStates(sta) {
