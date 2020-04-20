@@ -27,7 +27,7 @@
 
     var startState = ["b","b","b","b","e","e","r","r","r","r"];
     var endState = ["r","r","r","r","e","e","b","b","b","b"];
-    var limiter = 3;
+    var limiter = 50;
     var turn = 0;
     var done = false;
 
@@ -60,7 +60,7 @@
 
       while(didWeWin(state)) {
         turn++;
-        console.log(`Starting turn ${turn}`);
+        console.log(`%cStarting turn ${turn}`,"color: orange; font-size: 20pt;");
         console.log(`Cur state is:`,state);
 
         state = bruteForce(state);
@@ -195,23 +195,26 @@
     }
 
     function updateStateGraph(currentState,newStates) {
-      console.log("Updating state graph");
-      console.log(newStates);
+      console.info("%cUpdating state graph","color: orange;");
+      console.log("New States:",newStates);
 
       var currentStateHash = stateHash(currentState);
-      console.log(`Current State Hash: ${currentStateHash}`);
+      console.log(`Current State Hash: %c${currentStateHash}`,"color: cyan;");
 
       $ctrl.states[currentStateHash].visited = true;
 
       _.forEach(newStates,function(sta) {
         // Compute the hash of the state
         var hash = stateHash(sta);
-        console.log(`State hash: ${hash}`);
+        console.log(`State hash: %c${hash}`,"color: purple;");
 
         // Add the new state to the neighbors list if it is not already there
         if(!$ctrl.states[currentStateHash].neighbors,hash) {
           $ctrl.states[currentStateHash].neighbors.push(hash);
-          console.log(`New Neightbor State (${hash}) `,$ctrl.states[currentStateHash].neighbors)
+          console.log(`%cNew neightbor state`,"color: green;");
+        }
+        else {
+          console.log(`Existing neighbor state`,"color: yellow;");
         }
 
         // Add the state to the states list if it does not exist.  If the new
@@ -229,6 +232,8 @@
           }
         }
       });
+
+      console.log(`Current state neighbors:`,$ctrl.states[currentStateHash].neighbors);
     }
   }
 })();
