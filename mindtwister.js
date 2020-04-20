@@ -158,6 +158,13 @@
       return nextState;
     }
 
+    function weightedRewind(sta) {
+      // Weights for blue
+      var blueWeights = [-1,-1,-1,-1,0,0,1,1,1,1];
+      // Weights for red
+      var redWeights = [1,1,1,1,0,0,-1,-1,-1,-1];
+    }
+
     function calculateStates(sta) {
       var states = [];
 
